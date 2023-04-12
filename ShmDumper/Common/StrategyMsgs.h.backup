@@ -1,0 +1,454 @@
+#ifndef _STRATEGY_MSGS
+#define _STRATEGY_MSGS
+
+#include "iostream"
+#include "string.h"
+
+#define USE_TOKEN
+
+#define MESSAGE_TYPE_MARKET_UPDATE 11
+#define MESSAGE_TYPE_ORDER_REQUEST 22
+#define MESSAGE_TYPE_ORDER_RESPONSE 33
+
+#define BUY 1
+#define SELL 2
+
+#define PROP_ORDER 1
+#define CUSTOMER_ORDER 2
+
+typedef struct _networkPackets
+{
+	long	m_lSize;
+	uint64_t m_ulLocalTimeStamp;
+	unsigned long m_ulSequenceNumber;
+	unsigned short m_usMsgType;
+	// no need to send pointer as data will follow this packet
+	//void*	m_vData;		
+}NetworkPackets;
+
+#define BOOK_DEPTH 5
+
+typedef struct _orderBook
+{
+	double m_dPrice;
+	long m_lQuantity;
+	int m_iOrderCount;
+	void print()
+	{
+		std::cout << "|P|" << m_dPrice << "|Q|" << m_lQuantity << "|C|" << m_iOrderCount;
+	}
+}OrderBook;
+
+
+enum exchange_type
+{
+	NONE_EXCHANGE = 0,
+	NSE_CASH, 
+	NSE_FO, 
+	NSE_CDS, 
+	BSE_CASH, 
+	BSE_FO, 
+	MCX, 
+	NCDEX, 
+	MCX_SX,
+	MCX_CASH,
+	MCX_FO
+};
+
+typedef struct _marketUpdate
+{
+	_marketUpdate()
+	{
+		m_ulSequenceNumber = 0;
+		m_ulExchangeTimeStamp = 0;
+		m_ullLocalTimeStamp = 0;
+		m_eExchangeType = NONE_EXCHANGE;
+		//m_lScripCode = 0;
+#ifdef USE_TOKEN
+		m_ulScripToken = 0;
+#endif
+		memset(m_szScripCode, '\0', sizeof(m_szScripCode));
+		memset(m_szScripName, '\0', sizeof(m_szScripName));
+		m_dLastTradePrice = 0;
+		m_lLastTradeQuantity = 0;
+		m_lLastTradeTime = 0;
+		m_dDayOpen = 0;
+		m_dDayHigh = 0;
+		m_dDayLow = 0;
+		m_dDayClose = 0;
+		m_dDayPrevClose = 0;
+		m_dDayAverage = 0;
+		m_dImpliedVolCM = 0;
+		m_dImpliedVolFUT = 0;
+		m_ulTotalTradedQuantity = 0;
+		m_ldTotalTradedValue = 0;
+		m_lTotalBuyQuantity = 0;
+		m_lTotalSellQuantity = 0;
+		m_iValidBids = 0;
+		m_iValidAsks = 0;
+		memset(m_Bid, 0, sizeof(OrderBook)*BOOK_DEPTH);
+		memset(m_Ask, 0, sizeof(OrderBook)*BOOK_DEPTH);
+	}
+
+	void clear()
+	{
+		m_ulSequenceNumber = 0;
+		m_ulExchangeTimeStamp = 0;
+		m_ullLocalTimeStamp = 0;
+		m_eExchangeType = NONE_EXCHANGE;
+		//m_lScripCode = 0;
+#ifdef USE_TOKEN
+		m_ulScripToken = 0;
+#endif
+		memset(m_szScripCode, '\0', sizeof(m_szScripCode));
+		memset(m_szScripName, '\0', sizeof(m_szScripName));
+		m_dLastTradePrice = 0;
+		m_lLastTradeQuantity = 0;
+		m_lLastTradeTime = 0;
+		m_dDayOpen = 0;
+		m_dDayHigh = 0;
+		m_dDayLow = 0;
+		m_dDayClose = 0;
+		m_dDayPrevClose = 0;
+		m_dDayAverage = 0;
+		m_dImpliedVolCM = 0;
+		m_dImpliedVolFUT = 0;
+		m_ulTotalTradedQuantity = 0;
+		m_ldTotalTradedValue = 0;
+		m_lTotalBuyQuantity = 0;
+		m_lTotalSellQuantity = 0;	
+		m_iValidBids = 0;
+		m_iValidAsks = 0;
+		memset(m_Bid, 0, sizeof(OrderBook)*BOOK_DEPTH);
+		memset(m_Ask, 0, sizeof(OrderBook)*BOOK_DEPTH);
+	}
+	void print()
+	{
+		std::cout << "Update"
+			<< "|m_ulSequenceNumber|" << m_ulSequenceNumber
+			<< "|m_ulExchangeTimeStamp|" << m_ulExchangeTimeStamp
+			<< "|m_ullLocalTimeStamp|" << m_ullLocalTimeStamp
+			<< "|m_eExchangeType|" << m_eExchangeType
+#ifdef USE_TOKEN
+			<< "|m_ulScripToken|" << m_ulScripToken
+#endif			
+			<< "|m_szScripCode|" << m_szScripCode
+			<< "|m_dLastTradePrice|" << m_dLastTradePrice
+			<< "|m_lLastTradeQuantity|" << m_lLastTradeQuantity
+			<< "|m_lLastTradeTime|" << m_lLastTradeTime
+			<< "|m_dDayOpen|" << m_dDayOpen
+			<< "|m_dDayHigh|" << m_dDayHigh
+			<< "|m_dDayLow|" << m_dDayLow
+			<< "|m_dDayPrevClose|" << m_dDayPrevClose
+			<< "|m_dDayAverage|" << m_dDayAverage
+			<< "|m_dImpliedVolCM|" << m_dImpliedVolCM
+			<< "|m_dImpliedVolFUT|" << m_dImpliedVolFUT
+			<< "|m_ulTotalTradedQuantity|" << m_ulTotalTradedQuantity
+			<< "|m_dOpenInterest|" << m_dOpenInterest
+			<< "|m_lTotalBuyQuantity|" << m_lTotalBuyQuantity
+			<< "|m_lTotalSellQuantity|" << m_lTotalSellQuantity << std::endl;
+		std::cout << "Ask";
+			//m_Ask[0].print(); m_Ask[1].print(); m_Ask[2].print(); m_Ask[3].print(); m_Ask[4].print();
+			for(int ii=0; ii< m_iValidAsks; ii++)
+			{
+				m_Ask[ii].print();
+			}
+		std::cout << std::endl;
+		std::cout << "Bid";
+			//m_Bid[0].print(); m_Bid[1].print(); m_Bid[2].print(); m_Bid[3].print(); m_Bid[4].print();
+			for(int ii=0; ii< m_iValidBids; ii++)
+			{
+				m_Bid[ii].print();
+			}
+		std::cout << std::endl;
+	}
+	unsigned long m_ulSequenceNumber;
+	unsigned long m_ulExchangeTimeStamp;
+	uint64_t m_ullLocalTimeStamp;
+	exchange_type m_eExchangeType;
+#ifdef USE_TOKEN
+	unsigned long m_ulScripToken;
+#endif	
+	//long m_lScripCode;
+	char m_szScripCode[50];
+	char m_szScripName[20];
+	double m_dLastTradePrice;
+	long m_lLastTradeQuantity;
+	unsigned long m_lLastTradeTime;
+	
+	double m_dDayOpen;
+	double m_dDayHigh;
+	double m_dDayLow;
+	double m_dDayClose;
+	double m_dDayPrevClose;
+	double m_dDayAverage;
+	double m_dImpliedVolCM;
+	double m_dImpliedVolFUT;
+	unsigned long m_ulTotalTradedQuantity;
+	long double m_ldTotalTradedValue;
+	double m_dOpenInterest;
+	long m_lTotalBuyQuantity;
+	long m_lTotalSellQuantity;
+	
+	int m_iValidBids;
+	int m_iValidAsks;
+	OrderBook m_Bid[BOOK_DEPTH];
+	OrderBook m_Ask[BOOK_DEPTH];
+}MarketUpdates;
+
+enum request_type
+{
+	NONE_REQUEST = 0,
+	LOGON,
+	LOGOFF,
+	SUBSCRIBE,
+	NEWORDER,
+	MODIFYORDER,
+	CANCELORDER,
+	CANCELALLORDERS,
+	ORDERQUERYREQUEST,
+	TRADEQUERYREQUEST
+};
+
+enum order_duration
+{
+	NONE_DURATION = 0,
+	DAY,
+	IOC,
+	GTD,
+	GTC
+};
+
+enum order_type
+{
+	NONE_ORDER_TYPE = 0,
+	LIMIT,
+	MARKET,
+	STOPLOSSLIMIT,
+	STOPLOSSMARKET
+};
+
+enum order_product
+{
+	NRML = 0,
+	MIS,
+	CNC,
+	ARB
+};
+
+typedef struct _strategyRequest
+{
+	_strategyRequest()
+	{
+		m_eRequestType = NONE_REQUEST;
+		m_lRequestNumber = 0;
+		m_ulRequestTimeStamp = 0;
+		m_ulExchangeTimeStamp = 0;
+		m_ulLastOrderTradeTimeStamp = 0;
+		memset(m_szStrategyName, '\0', sizeof(m_szStrategyName));
+		memset(m_szStrategyPassword, '\0', sizeof(m_szStrategyPassword));
+		m_lLocalOrderID = 0;
+		m_eExchangeType = NONE_EXCHANGE;
+#ifdef USE_TOKEN
+		m_ulScripToken = 0;
+#endif
+		//m_lScripCode = 0;
+		memset(m_szScripCode, '\0', sizeof(m_szScripCode));
+		memset(m_szScripName, '\0', sizeof(m_szScripName));
+		m_iBuyOrSell = 0;
+		m_dPrice = 0;
+		m_lQuantity = 0;
+		m_lDisclosedQuantity = 0;
+		memset(m_szClientCode, '\0', sizeof(m_szClientCode));
+		m_eProductType = NRML;
+		m_eOrderDuration = NONE_DURATION;
+		m_iIsProp = -1;
+		m_eOrderType = NONE_ORDER_TYPE;
+		m_dTriggerPrice = 1;
+
+	}
+
+	void clear()
+	{
+		_strategyRequest();	
+	}
+	
+	void print()
+	{
+		std::cout << "Request"
+			<< "|m_eRequestType|" << m_eRequestType
+			<< "|m_szStrategyName|" << m_szStrategyName
+			<< "|m_lLocalOrderID|" << m_lLocalOrderID
+			<< "|m_eExchangeType|" << m_eExchangeType
+#ifdef USE_TOKEN
+			<< "|m_ulScripToken|" << m_ulScripToken
+#endif
+			<< "|m_szScripCode|" << m_szScripCode
+			<< "|m_iBuyOrSell|" << m_iBuyOrSell
+			<< "|m_dPrice|" << m_dPrice
+			<< "|m_lQuantity|" << m_lQuantity
+			<< "|m_lDisclosedQuantity|" << m_lDisclosedQuantity
+			<< "|m_szClientCode|" << m_szClientCode
+			<< std::endl;
+	}
+	// LOGON, SUBSCRIBE, NEWORDER, MODIFYORDER, CALCELORDER, ORDERQUERY, TRADEQUERY 
+	request_type m_eRequestType;
+
+	// this will be used as sequence number and will keep both client and server in sync
+	long m_lRequestNumber;
+
+	uint64_t m_ulRequestTimeStamp;
+	unsigned long m_ulExchangeTimeStamp;
+
+	// used only in ORDERQUERY, TRADEQUERY 
+	unsigned long m_ulLastOrderTradeTimeStamp;
+#ifdef USE_TOKEN
+	unsigned long m_ulScripToken;
+#endif
+	char m_szStrategyName[20];
+
+	// used only in LOGON
+	char m_szStrategyPassword[20];
+	
+	// ORDER related fields
+	// to track each order
+	long m_lLocalOrderID;
+	// NSE Cash, NSE FO, NSE CDS, BSE Cash, BSE FO, MCX, NCDEX, MCX-SX
+	exchange_type m_eExchangeType;
+	//long m_lScripCode;
+	char m_szScripCode[50];
+	char m_szScripName[20];
+	int m_iBuyOrSell;
+	double m_dPrice;
+	long m_lQuantity;
+	long m_lDisclosedQuantity;
+	char m_szClientCode[20];
+	order_product m_eProductType;
+	order_duration m_eOrderDuration;
+	int m_iIsProp;
+	order_type m_eOrderType;
+	// used incase of stop loss orders
+	double m_dTriggerPrice;
+}StrategyRequest;
+
+enum reponse_type
+{
+	NONE_RESPONSE = 0,
+	INVALID_MSG,
+	LOGON_SUCCESS, 
+	LOGON_FAILURE, 
+	LOGGEDOFF,
+	SUBSCRIBE_SUCCESS, 
+	SUBSCRIBE_FAILURE, 
+	NEWORDER_CONFIRM, 
+	NEWORDER_REJECT, 
+	NEWORDER_FREEZE,
+	STOPLOSSORDER_CONFIRM,
+	MODIFYORDER_CONFIRM, 
+	MODIFYORDER_REJECT, 
+	CANCELORDER_CONFIRM, 
+	CANCELORDER_REJECT,
+	TRADE_MSG,
+	ORDERQUERY_START, 
+	ORDERQUERY_RESPONSE,
+	ORDERQUERY_END, 
+	TRADEQUERY_START,
+	TRADEQUERY_RESPONSE,
+	TRADEQUERY_END
+};
+
+typedef struct _strategyResponse
+{
+	_strategyResponse()
+	{
+		m_eResponseType = NONE_RESPONSE;		
+		m_lRequestNumber = 0;
+		m_lResponseNumber = 0;
+		m_ulResponseTimeStamp = 0;
+		memset(m_szStrategyName, '\0', sizeof(m_szStrategyName));
+		m_lLocalOrderID = 0;
+		m_lNestOrderID = 0;
+		m_llExchOrderID = 0;
+		m_eExchangeType = NONE_EXCHANGE;
+		//m_lScripCode = 0;
+#ifdef USE_TOKEN
+		m_ulExchangeTradeID = 0;
+		m_ulScripToken = 0;
+#endif
+		memset(m_szScripCode, '\0', sizeof(m_szScripCode));
+		memset(m_szScripName, '\0', sizeof(m_szScripName));
+		m_iBuyOrSell = 0;
+		m_dPrice = 0;
+		m_lQuantity = 0;
+		m_lTotalOpenQuantity = 0;
+		m_lTotalFilledQuantity = 0;
+		memset(m_szClientCode, '\0', sizeof(m_szClientCode));
+		memset(m_szRejectionReason, '\0', sizeof(m_szRejectionReason));
+	}
+	void clear()
+	{
+		_strategyResponse();
+	}
+	void print()
+	{
+		std::cout << "Response"
+			<< "|m_eResponseType|" << m_eResponseType
+			<< "|m_szStrategyName|" << m_szStrategyName
+			<< "|m_lLocalOrderID|" << m_lLocalOrderID
+			<< "|m_lNestOrderID|" << m_lNestOrderID
+			<< "|m_llExchOrderID|" << m_llExchOrderID
+			<< "|m_eExchangeType|" << m_eExchangeType
+#ifdef USE_TOKEN
+			<< "|m_ulExchangeTradeID|" << m_ulExchangeTradeID
+			<< "|m_ulScripToken|" << m_ulScripToken
+#endif
+			<< "|m_szScripCode|" << m_szScripCode
+			<< "|m_iBuyOrSell|" << m_iBuyOrSell
+			<< "|m_dPrice|" << m_dPrice
+			<< "|m_lQuantity|" << m_lQuantity
+			<< "|m_lTotalOpenQuantity|" << m_lTotalOpenQuantity
+			<< "|m_lTotalFilledQuantity|" << m_lTotalFilledQuantity
+			<< "|m_szClientCode|" << m_szClientCode
+			<< "|m_szRejectionReason|" << m_szRejectionReason
+			<< std::endl;
+	}
+	// LOGON_SUCCESS, LOGON_FAILURE, SUBSCRIBE_SUCCESS, SUBSCRIBE_FAILURE, 
+	// NEWORDER_CONFIRM, NEWORDER_REJECT, MODIFYORDER_CONFIRM, MODIFYORDER_REJECT, CALCELORDER_CONFIRM, CALCELORDER_REJECT
+	// ORDERQUERY_START, ORDERQUERY_END, TRADEQUERY_START, TRADEQUERY_END
+
+	reponse_type m_eResponseType;		
+	
+	// this will be used as sequence number and will keep both client and server in sync
+	long m_lRequestNumber;
+
+	// incremental id for each response
+	long m_lResponseNumber;
+	uint64_t m_ulResponseTimeStamp;
+	
+	char m_szStrategyName[20];
+
+	// ORDER related fields
+	// to track each order
+	long m_lLocalOrderID;
+	long m_lNestOrderID;
+	long long m_llExchOrderID;
+
+	// NSE Cash, NSE FO, NSE CDS, BSE Cash, BSE FO, MCX, NCDEX, MCX-SX
+	exchange_type m_eExchangeType;
+	//long m_lScripCode;
+#ifdef USE_TOKEN
+	unsigned long m_ulExchangeTradeID;
+	unsigned long m_ulScripToken;
+#endif
+	char m_szScripCode[50];
+	char m_szScripName[20];
+	int m_iBuyOrSell;
+	double m_dPrice;
+	long m_lQuantity;
+	long m_lTotalOpenQuantity;
+	long m_lTotalFilledQuantity;
+	char m_szClientCode[20];
+	char m_szRejectionReason[128];
+}StrategyResponse;
+
+#endif
